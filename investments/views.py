@@ -3,8 +3,7 @@ from datetime import date, timedelta
 from django.http import JsonResponse
 
 
-from  .models import Asset, AssetPrice, Portfolio, PortfolioAssets
-from .scripts import load_excel_without_db
+from  .models import AssetPrice, Portfolio, PortfolioAssets
 
 
 def index(request):
@@ -31,7 +30,8 @@ def index(request):
         while curr_date <= end_date:
             # Iterate on each date from start date to end date
             date_key = curr_date.isoformat()
-            data[portfolio.name][date_key] = {'weights': {}, 'value': 0.0}
+            weights = {}
+            value = 0.0
 
             for asset_price in AssetPrice.objects.filter(date=curr_date):
                 asset = asset_price.asset
@@ -40,13 +40,16 @@ def index(request):
                     asset=asset, portfolio=portfolio
                 ).first().quantity
                 x = p * q
-                data[portfolio.name][date_key]['weights'][asset.name] = x
-                data[portfolio.name][date_key]['value'] += x
+                weights[asset.name] = x
+                value += x
 
-            v = data[portfolio.name][date_key]['value']
-            for asset_name in data[portfolio.name][date_key]['weights']:
-                data[portfolio.name][date_key]['weights'][asset_name] /= v
+            # Divide all weights by the total value
+            for asset_name in weights:
+                weights[asset_name] /= value
 
+            data[portfolio.name][date_key] = {
+                'weights': weights, 'value': value
+            }
             curr_date += time_delta
 
     return JsonResponse(data)

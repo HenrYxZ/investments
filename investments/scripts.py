@@ -15,14 +15,14 @@ def load_excel(starting_value):
 
     # store assets
     for asset_name in df['activos']:
-        # assets[asset_name] = Asset.objects.create(name=asset_name)
+        assets[asset_name] = Asset.objects.create(name=asset_name)
         assets[asset_name] = asset_name
 
     # store portfolios
     for portfolio_name in df.columns[2:]:
-        # portfolios[portfolio_name] = Portfolio.objects.create(
-        #     name=portfolio_name
-        # )
+        portfolios[portfolio_name] = Portfolio.objects.create(
+            name=portfolio_name
+        )
         portfolios[portfolio_name] = portfolio_name
         weights[portfolio_name] = {}
         quantities[portfolio_name] = {}
@@ -56,25 +56,17 @@ def load_excel(starting_value):
                 raise ValueError(f"Price for {asset_name} shouldn't 0")
             q = (w / p) * starting_value
             quantities[portfolio_name][asset_name] = q
-            # PortfolioAssets.objects.create(
-            #     portfolio=portfolios[portfolio_name],
-            #     asset=assets[asset_name],
-            #     quantity=q,
-            #     date=start_date
-            # )
+            PortfolioAssets.objects.create(
+                portfolio=portfolios[portfolio_name],
+                asset=assets[asset_name],
+                quantity=q,
+                date=start_date
+            )
 
-
-    """
-    don't need to do this here
-    """
     # Calculate weights and values in time
-    
     for idx, row in df.iterrows():
         date = row['Dates']
-        for portfolio_name in portfolios:
-            weights_time[portfolio_name][date] = {}
-            total_values[portfolio_name][date] = 0.0
-    
+
         for asset_name in assets:
             p = row[asset_name]
             AssetPrice.objects.create(
@@ -82,18 +74,6 @@ def load_excel(starting_value):
                 asset=Asset.objects.filter(name=asset_name).first(),
                 date=date
             )
-            for portfolio_name in portfolios:
-                x = quantities[portfolio_name][asset_name] * p
-                weights_time[portfolio_name][date][asset_name] = x
-                total_values[portfolio_name][date] += x
-    
-        for portfolio_name in portfolios:
-            # divide the total value for all the weights
-            vt = total_values[portfolio_name][date]
-            for asset_name in assets:
-                weights_time[portfolio_name][date][asset_name] /= vt
-
-    return weights_time, total_values
 
 
 def load_excel_without_db(starting_value):
