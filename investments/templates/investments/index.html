@@ -1,0 +1,26 @@
+{% if context %}
+    <h2>Portafolio 1</h2>
+    <h3>Values</h3>
+    <ul>
+        {% for value in values1( %}
+            <li>
+                {{value.date}} {{value.amount}}
+            </li>
+        {% endfor %}
+    </ul>
+
+    <h3>Weights</h3>
+    <ul>
+        {% for weight in weights1 %}
+            {% date in weights %}
+                {% asset_name in weights[date] %}
+                    <li>
+                        {{date}} {{asset_name}} {{weights[asset_name]}}
+                    </li>
+                {% endfor %}
+            {% endfor %}
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No data available.</p>
+{% endif %}
