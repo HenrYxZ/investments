@@ -18,10 +18,6 @@ class Portfolio(models.Model):
     def __str__(self):
         return self.name
 
-    def get_values_and_weights(self, start_date, end_date):
-        arr = []
-        return arr
-
 
 class PortfolioAssets(models.Model):
     portfolio = models.ForeignKey(Portfolio, on_delete=models.CASCADE)
