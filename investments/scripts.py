@@ -16,14 +16,12 @@ def load_excel(starting_value):
     # store assets
     for asset_name in df['activos']:
         assets[asset_name] = Asset.objects.create(name=asset_name)
-        assets[asset_name] = asset_name
 
     # store portfolios
     for portfolio_name in df.columns[2:]:
         portfolios[portfolio_name] = Portfolio.objects.create(
             name=portfolio_name
         )
-        portfolios[portfolio_name] = portfolio_name
         weights[portfolio_name] = {}
         quantities[portfolio_name] = {}
         weights_time[portfolio_name] = {}
@@ -71,7 +69,7 @@ def load_excel(starting_value):
             p = row[asset_name]
             AssetPrice.objects.create(
                 price=p,
-                asset=Asset.objects.filter(name=asset_name).first(),
+                asset=assets[asset_name],
                 date=date
             )
 
